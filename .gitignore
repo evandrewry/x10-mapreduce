@@ -1,0 +1,7 @@
+*.java
+*.class
+*.o
+*.h
+*.cc
+*.swp
+*.un~
