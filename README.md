@@ -1,6 +1,7 @@
 X10-MapReduce
 =============
 COMS W4130 : Principles and Practice of Parallel Programming
+
 Partners : Timothy Giel (tkg2104), Evan Drewry (ewd2106)
 
 Proposal
