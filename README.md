@@ -76,7 +76,7 @@ WordCountMapperOutputCollector used in our example:
 
     private static class WordCountMapperOutputCollector extends OutputCollector[String, Int] {
         public def collect(key:String, value:Int) {
-            var current:Box[Int] = get(key);
+            val current = get(key);
             if (current != null) {
                 put(key, current.value + 1);
             } else {
