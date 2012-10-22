@@ -40,7 +40,7 @@ Example - WordCount.x10
 Included in the source, this is the canonical multi-document word count example of a
 MapReduce program, but using our specific X10 flavor of MapReduce.
 
-##Map
+###Map
 Here is the WordCountMapper subclass of Mapper, which calls collect(word, 1) on
 the OutputCollector for each word/token in the input string:
 
@@ -68,7 +68,7 @@ the OutputCollector for each word/token in the input string:
 This code will be executed for each subset of our data set in parallel, and
 then the output will be collected and processed by the master node.
 
-##Writing a custom OutputCollector
+###Writing a custom OutputCollector
 The default implementation of collect(key, value) in OutputCollector just sets the
 value of the key in its internal HashMap to the value passed in. This is why it
 is useful to define a custom subclass of OutputCollector. Here is the
@@ -89,7 +89,7 @@ This implementation of collect() sets the word's count to 1 if it has not yet
 been inserted into the OutputCollector's internal HashMap, but otherwise
 increments the count already present for that key.
 
-##Reduce
+###Reduce
 Once we have collected all the output for each map job, the shuffle step will
 occur behind the scenes in the MapReduceJob.x10 code, and this shuffled output
 will be sent to the reducer class, which is implemented as follows:
@@ -111,7 +111,7 @@ never need to manipulate the output HashMap beyond simply setting new key-value
 pairs, and the default implementation of collect() in OutputCollector does exactly
 this. 
 
-##Putting the pieces together
+###Putting the pieces together
 This is how we would construct and run a MapReduceJob for the word count example,
 where input is a list of HashMaps that we want to feed into the Mapper class as
 input. In this example, each item on the list is a HashMap that is essentially
