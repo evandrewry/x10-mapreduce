@@ -28,17 +28,14 @@ node, which will then collect all of the processed data and form the output, whi
 will be the answer to the original problem.
 
 
-The Basics
-----------
+The Basics - WordCount.x10
+--------------------------
 Basically, the MapReduce programmer subclasses both Reducer and Mapper with his own
 implementations of reduce() and map(), respectively. Additionally, a custom
 OutputCollector can be created by subclassing OutputCollector and overriding
-the collect() method. The best way to see this in action is by example:
-
-Example - WordCount.x10
------------------------
-Included in the source, this is the canonical multi-document word count example of a
-MapReduce program, but using our specific X10 flavor of MapReduce.
+the collect() method. The best way to see this in action is by example. Included in 
+the source, this is the canonical multi-document word count example of a MapReduce
+program, but using our specific X10 flavor of MapReduce.
 
 ###Map
 Here is the WordCountMapper subclass of Mapper, which calls collect(word, 1) on
