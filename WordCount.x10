@@ -64,13 +64,14 @@ public class WordCount {
         input_set_2.put(3, str6);
 
         val input_set_3 = new HashMap[Int, String]();        
-        input_set_2.put(1, str7);
-        input_set_1.put(2, str2);
-        input_set_1.put(3, str3);        
+        input_set_3.put(1, str7);
+        input_set_3.put(2, str2);
+        input_set_3.put(3, str3);        
 
         val input = new ArrayList[HashMap[Int, String]]();        
         input.add(input_set_1);
         input.add(input_set_2);
+        input.add(input_set_3);
 
         val mapper = new WordCountMapper();
         val reducer =  new WordCountReducer();
