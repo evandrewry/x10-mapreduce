@@ -2,7 +2,7 @@ import x10.util.HashMap;
 import x10.util.Box;
 
 public class OutputCollector[T, U] {
-    val output = new HashMap[T, U]();
+    var output:HashMap[T, U];
 
     def collect(key:T, value:U) {
         put(key, value);
@@ -19,5 +19,9 @@ public class OutputCollector[T, U] {
     def get()
     :HashMap[T,U] {
         return output;
+    }
+    
+    def reset() {
+        output = new HashMap[T, U]();
     }
 }

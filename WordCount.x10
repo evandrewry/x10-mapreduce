@@ -77,12 +77,12 @@ public class WordCount {
         val reducer =  new WordCountReducer();
         val map_output_collector = new WordCountMapperOutputCollector();
         val reduce_output_collector = new OutputCollector[String, Int]();
-        val wordCounter = new MapReduceJob(mapper,
-                                           reducer,
-                                           map_output_collector,
-                                           reduce_output_collector);
+        val job = new MapReduceJob(mapper,
+                                   reducer,
+                                   map_output_collector,
+                                   reduce_output_collector);
 
-        val output = wordCounter.run(input);
+        val output = job.run(input);
 
         for (k in output.keySet())
             Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
