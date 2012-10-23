@@ -40,28 +40,28 @@ program, but using our specific X10 flavor of MapReduce.
 ###Map
 Here is the WordCountMapper subclass of Mapper, which calls collect(word, 1) on
 the OutputCollector for each word/token in the input string:
-
-    private static class WordCountMapper extends Mapper[Int, String, String, Int] {
-        public def map(num:Int,
-                       input:String,
-                       output:OutputCollector[String, Int]) {
-            var text:String = input;
-            var word:String;
-            while(text.trim().length() > 0) {
-                text = text.trim();
-                val end = text.indexOf(' ');
-                if (end > 0) {
-                    word = text.substring(0, end);
-                    text = text.substring(end);
-                } else {
-                    word = text;
-                    text = "";
-                }
-                output.collect(word, 1);
+```scala
+private static class WordCountMapper extends Mapper[Int, String, String, Int] {
+    public def map(num:Int,
+                   input:String,
+                   output:OutputCollector[String, Int]) {
+        var text:String = input;
+        var word:String;
+        while(text.trim().length() > 0) {
+        text = text.trim();
+            val end = text.indexOf(' ');
+            if (end > 0) {
+                word = text.substring(0, end);
+                text = text.substring(end);
+            } else {
+                word = text;
+                text = "";
             }
+            output.collect(word, 1);
         }
     }
-
+}
+```
 This code will be executed for each subset of our data set in parallel, and
 then the output will be collected and processed by the master node.
 
@@ -70,18 +70,18 @@ The default implementation of collect(key, value) in OutputCollector just sets t
 value of the key in its internal HashMap to the value passed in. This is why it
 is useful to define a custom subclass of OutputCollector. Here is the
 WordCountMapperOutputCollector used in our example:
-
-    private static class WordCountMapperOutputCollector extends OutputCollector[String, Int] {
-        public def collect(key:String, value:Int) {
-            val current = get(key);
-            if (current != null) {
-                put(key, current.value + 1);
-            } else {
-                put(key, 1);
-            }
+```scala
+private static class WordCountMapperOutputCollector extends OutputCollector[String, Int] {
+    public def collect(key:String, value:Int) {
+        val current = get(key);
+        if (current != null) {
+            put(key, current.value + 1);
+        } else {
+            put(key, 1);
         }
     }
-
+}
+```
 This implementation of collect() sets the word's count to 1 if it has not yet
 been inserted into the OutputCollector's internal HashMap, but otherwise
 increments the count already present for that key.
@@ -90,19 +90,19 @@ increments the count already present for that key.
 Once we have collected all the output for each map job, the shuffle step will
 occur behind the scenes in the MapReduceJob.x10 code, and this shuffled output
 will be sent to the reducer class, which is implemented as follows:
-
-    private static class WordCountReducer extends Reducer[String, Int, String, Int] {
-        public def reduce(key:String,
-                          values:List[Int],
-                          output:OutputCollector[String, Int]) {
-            var sum:Int = 0;
-            for (i in 0..(values.size() - 1)) {
-                sum += values(i);
-            }
-            output.collect(key, sum);
+```scala
+private static class WordCountReducer extends Reducer[String, Int, String, Int] {
+    public def reduce(key:String,
+                      values:List[Int],
+                      output:OutputCollector[String, Int]) {
+        var sum:Int = 0;
+        for (i in 0..(values.size() - 1)) {
+            sum += values(i);
         }
+        output.collect(key, sum);
     }
-
+}
+```
 Notice that we do not need to write a custom OutputCollector for the reducer, as we
 never need to manipulate the output HashMap beyond simply setting new key-value
 pairs, and the default implementation of collect() in OutputCollector does exactly
@@ -122,14 +122,14 @@ count as the value, it will have a list of counts from each Mapper job. This
 data is then split up by key and sent to a Reduce job individually, where in
 this example the sum of all word counts in the list of counts are summed to get
 a final word count across all documents.
-
-    val mapper = new WordCountMapper();
-    val reducer =  new WordCountReducer();
-    val map_output_collector = new WordCountMapperOutputCollector();
-    val reduce_output_collector = new OutputCollector[String, Int]();
-    val job = new MapReduceJob(mapper,
-                               reducer,
-                               map_output_collector,
-                               reduce_output_collector);
-
-    val output = job.run(input);
+```scala
+val mapper = new WordCountMapper();
+val reducer =  new WordCountReducer();
+val map_output_collector = new WordCountMapperOutputCollector();
+val reduce_output_collector = new OutputCollector[String, Int]();
+val job = new MapReduceJob(mapper,
+                           reducer,
+                           map_output_collector,
+                           reduce_output_collector);
+val output = job.run(input);
+```
