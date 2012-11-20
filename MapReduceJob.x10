@@ -1,8 +1,10 @@
 import x10.util.HashMap;
 import x10.util.List;
+import x10.util.Timer;
 import x10.util.ArrayList;
 
 public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
+    private static val timer = new Timer();
     private val mapper:Mapper[IK, IV, CK, CV];
     private val reducer:Reducer[CK, CV, OK, OV];
     private val m_output_collector:OutputCollector[CK, CV];
@@ -35,7 +37,7 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
     public def run(input:List[HashMap[IK, IV]])
     :HashMap[OK, OV] {
         val reducers = input.size();
-        var start = timer.nanoTime();
+        var start:Long = timer.nanoTime();
         val intermediates = new Rail[HashMap[CK, CV]](reducers);
         finish for (i in 0..(input.size() - 1)) async {
             intermediates(i) = mapper.run(input(i), m_output_collector.make());
