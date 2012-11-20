@@ -20,6 +20,10 @@ public class OutputCollector[T, U] {
     :HashMap[T,U] {
         return output;
     }
+
+    def make() {
+        return new OutputCollector[T, U]();
+    }
     
     def reset() {
         output = new HashMap[T, U]();

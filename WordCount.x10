@@ -3,8 +3,10 @@ import x10.util.HashMap;
 import x10.util.List;
 import x10.util.ArrayList;
 import x10.util.Box;
+import x10.util.Timer;
 
 public class WordCount {
+    private static val timer = new Timer();
 
     private static class WordCountMapper extends Mapper[Int, String, String, Int] {
         public def map(num:Int,
@@ -82,7 +84,10 @@ public class WordCount {
                                    map_output_collector,
                                    reduce_output_collector);
 
+        val start = timer.nanoTime();
         val output = job.run(input);
+        val time = timer.nanoTime() - start;
+        Console.OUT.print(time);
 
         for (k in output.keySet())
             Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
