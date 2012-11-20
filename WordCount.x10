@@ -107,7 +107,7 @@ public class WordCount {
                                    reducer,
                                    map_output_collector,
                                    reduce_output_collector,
-                                   (k:CK, n:Int) => Math.abs(k.hashCode()) % n);
+                                   (k:String, n:Int) => Math.abs(k.hashCode()) % n);
 
         val start = timer.nanoTime();
         val output = job.run(input);
