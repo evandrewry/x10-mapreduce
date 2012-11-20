@@ -52,7 +52,7 @@ public class WordCount {
         }
 
         public def make() {
-          return new WordCountMapperOutputCollector();
+            return new WordCountMapperOutputCollector();
         }
     }
 
@@ -60,43 +60,43 @@ public class WordCount {
 
 
         val input_set_1 = new HashMap[Int, String]();
-        for (var i:Int = 0; i < 1000; i += 7) {
-          input_set_1.put(i + 1, str1);
-          input_set_1.put(i + 2, str2);
-          input_set_1.put(i + 3, str3);
-          input_set_1.put(i + 4, str4);
-          input_set_1.put(i + 5, str5);
-          input_set_1.put(i + 6, str6);
-          input_set_1.put(i + 7, str7);
+        for (var i:Int = 0; i < 100; i += 7) {
+            input_set_1.put(i + 1, str1);
+            input_set_1.put(i + 2, str2);
+            input_set_1.put(i + 3, str3);
+            input_set_1.put(i + 4, str4);
+            input_set_1.put(i + 5, str5);
+            input_set_1.put(i + 6, str6);
+            input_set_1.put(i + 7, str7);
         }
 
         val input_set_2 = new HashMap[Int, String]();        
-        for (var i:Int = 0; i < 1000; i += 7) {
-          input_set_2.put(i + 1, str1);
-          input_set_2.put(i + 2, str2);
-          input_set_2.put(i + 3, str3);
-          input_set_2.put(i + 4, str4);
-          input_set_2.put(i + 5, str5);
-          input_set_2.put(i + 6, str6);
-          input_set_2.put(i + 7, str7);
+        for (var i:Int = 0; i < 100; i += 7) {
+            input_set_2.put(i + 1, str1);
+            input_set_2.put(i + 2, str2);
+            input_set_2.put(i + 3, str3);
+            input_set_2.put(i + 4, str4);
+            input_set_2.put(i + 5, str5);
+            input_set_2.put(i + 6, str6);
+            input_set_2.put(i + 7, str7);
         }
 
         val input_set_3 = new HashMap[Int, String]();        
-        for (var i:Int = 0; i < 1000; i += 7) {
-          input_set_3.put(i + 1, str1);
-          input_set_3.put(i + 2, str2);
-          input_set_3.put(i + 3, str3);
-          input_set_3.put(i + 4, str4);
-          input_set_3.put(i + 5, str5);
-          input_set_3.put(i + 6, str6);
-          input_set_3.put(i + 7, str7);
+        for (var i:Int = 0; i < 100; i += 7) {
+            input_set_3.put(i + 1, str1);
+            input_set_3.put(i + 2, str2);
+            input_set_3.put(i + 3, str3);
+            input_set_3.put(i + 4, str4);
+            input_set_3.put(i + 5, str5);
+            input_set_3.put(i + 6, str6);
+            input_set_3.put(i + 7, str7);
         }
 
         val input = new ArrayList[HashMap[Int, String]]();        
-        for (i in 0..100){
-          input.add(input_set_1);
-          input.add(input_set_2);
-          input.add(input_set_3);
+        for (i in 0..5){
+            input.add(input_set_1);
+            input.add(input_set_2);
+            input.add(input_set_3);
         }
 
         val mapper = new WordCountMapper();
@@ -107,7 +107,7 @@ public class WordCount {
                                    reducer,
                                    map_output_collector,
                                    reduce_output_collector,
-                                   (s:String, r:Int) => 0);
+                                   (k:CK, n:Int) => Math.abs(k.hashCode()) % n);
 
         val start = timer.nanoTime();
         val output = job.run(input);
@@ -115,7 +115,7 @@ public class WordCount {
         Console.OUT.println(time);
 
         //for (k in output.keySet())
-            //Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
+        //Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
     }
 
 
