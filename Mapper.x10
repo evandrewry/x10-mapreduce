@@ -10,7 +10,6 @@ public abstract class Mapper[IK, IV, OK, OV] {
     public def run(input:HashMap[IK,IV],
         outputCollector:OutputCollector[OK, OV])
     :HashMap[OK, OV] {
-        outputCollector.reset();
         for (i in input.keySet()) map(i, input.get(i).value, outputCollector);
         return outputCollector.get();
     }

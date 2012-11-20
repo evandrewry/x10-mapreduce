@@ -11,7 +11,6 @@ public abstract class Reducer[IK, IV, OK, OV] {
     public def run(input:HashMap[IK, List[IV]],
                    outputCollector:OutputCollector[OK, OV])
     :HashMap[OK, OV] {
-        outputCollector.reset();
         for (k in input.keySet())
                 reduce(k, input.get(k).value, outputCollector);
         return outputCollector.get();

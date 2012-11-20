@@ -50,6 +50,10 @@ public class WordCount {
                 put(key, 1);
             }
         }
+
+        public def make() {
+          return new WordCountMapperOutputCollector();
+        }
     }
 
     public static def main(args:Array[String]{self.rank == 1}) {
@@ -82,15 +86,16 @@ public class WordCount {
         val job = new MapReduceJob(mapper,
                                    reducer,
                                    map_output_collector,
-                                   reduce_output_collector);
+                                   reduce_output_collector,
+                                   (s:String, r:Int) => 0);
 
         val start = timer.nanoTime();
         val output = job.run(input);
         val time = timer.nanoTime() - start;
-        Console.OUT.print(time);
+        Console.OUT.println(time);
 
-        for (k in output.keySet())
-            Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
+        //for (k in output.keySet())
+            //Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
     }
 
 

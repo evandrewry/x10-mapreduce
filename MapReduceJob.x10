@@ -7,6 +7,7 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
     private val reducer:Reducer[CK, CV, OK, OV];
     private val m_output_collector:OutputCollector[CK, CV];
     private val r_output_collector:OutputCollector[OK, OV];    
+    private val partition_op:(CK, Int) => Int;
 
     public def this(mapper:Mapper[IK, IV, CK, CV],
                     reducer:Reducer[CK, CV, OK, OV]) {
@@ -14,17 +15,20 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
         this.reducer = reducer;
         this.m_output_collector = new OutputCollector[CK, CV]();
         this.r_output_collector = new OutputCollector[OK, OV]();
+        this.partition_op = (k:CK, n:Int) => Math.abs(k.hashCode()) % n;
 
     }
 
     public def this(mapper:Mapper[IK, IV, CK, CV],
                     reducer:Reducer[CK, CV, OK, OV],
                     m_output_collector:OutputCollector[CK, CV],
-                    r_output_collector:OutputCollector[OK, OV]) {
+                    r_output_collector:OutputCollector[OK, OV],
+                    partition_op:(CK, Int)=>Int) {
         this.mapper = mapper;
         this.reducer = reducer;
         this.m_output_collector = m_output_collector;
         this.r_output_collector = r_output_collector;
+        this.partition_op = partition_op;
     }
 
 
@@ -36,23 +40,28 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
             intermediates(i) = mapper.run(input(i), m_output_collector.make());
         }
 
-        val shuffled = new Rail[HashMap[CK, List[CV]]](reducers, new HashMap[CK, List[CV]]());
+        /* shuffle */
+        val shuffled = new Rail[HashMap[CK, List[CV]]](reducers, (i:Int)=>new HashMap[CK, List[CV]]());
+        /*iterate over intermediate results */
         for (i in intermediates) {
+            /* iterate over keys for each intermediates result */
             for (k in intermediates(i).keySet()) {
                 val v = intermediates(i).get(k).value;
-                val part = partition(k, reducers);
-                if (shuffled(part).containsKey(k)) {
-                    shuffled(part).get(k).value.add(v);
+                /* calculate reduce partition for this key */
+                val part = partition_op(k, reducers);
+                val partition = shuffled(part);
+                if (partition.containsKey(k)) {
+                    partition.get(k).value.add(v);
                 } else {
                     val list = new ArrayList[CV]();
                     list.add(v);
-                    shuffled(part).put(k, list as List[CV]);
+                    partition.put(k, list as List[CV]);
                 }
             }
         }
 
         val reduced = new Rail[HashMap[OK, OV]](reducers);
-        finish for (i in 0..(shuffled.size - 1)) async {
+        finish for (i in 0..(reducers - 1)) async {
             reduced(i) = reducer.run(shuffled(i), r_output_collector.make());
         }
 
@@ -67,8 +76,4 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
 
     }
 
-    private def partition(x:CK, reducers:Int)
-    :Int {
-        return Math.abs(x.hashCode()) % reducers;
-    }
 }
