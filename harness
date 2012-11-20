@@ -2,9 +2,9 @@
 
 for i in {0..4}
 do
-    asyncs=2**$i
+    asyncs=$((2 ** $i))
     export X10_NTHREADS=$asyncs
-    echo trial $i
+    echo trial $(($i+1)), $asyncs asyncs
     ./WordCount
 done
 

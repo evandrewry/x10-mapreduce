@@ -112,7 +112,7 @@ public class WordCount {
         val start = timer.nanoTime();
         val output = job.run(input);
         val time = timer.nanoTime() - start;
-        Console.OUT.println(time);
+        Console.OUT.println("\t\t" + time);
 
         //for (k in output.keySet())
         //Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
