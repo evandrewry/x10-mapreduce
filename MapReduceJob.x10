@@ -17,7 +17,6 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
         this.m_output_collector = new OutputCollector[CK, CV]();
         this.r_output_collector = new OutputCollector[OK, OV]();
         this.partition_op = (k:CK, n:Int) => Math.abs(k.hashCode()) % n;
-
     }*/
 
     public def this(mapper:Mapper[IK, IV, CK, CV],
@@ -29,12 +28,12 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
     }
 
 
-    public def run(input:List[ArrayList[Pair[IK,IV]]])
+    public def run(input:Rail[ArrayList[Pair[IK,IV]]])
     {
-        val reducers = input.size();
+        val reducers = input.size;
         var start:Long = timer.nanoTime();
         val intermediates = new Rail[Rail[ArrayList[Pair[CK, CV]]]](reducers);
-        finish for (i in 0..(input.size() - 1)) async {
+        finish for (i in input) async {
             intermediates(i) = mapper.run(input(i), reducers, partition_op);
         }
         Console.OUT.println("map\t\t" + (timer.nanoTime() - start));
@@ -65,7 +64,7 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
 
         start = timer.nanoTime();
         val reduced = new Rail[ArrayList[Pair[OK, OV]]](reducers);
-        finish for (i in 0..(reducers - 1)) async {
+        finish for (i in shuffled) async {
             reduced(i) = reducer.run(shuffled(i));
         }
         Console.OUT.println("reduce\t\t" + (timer.nanoTime() - start));

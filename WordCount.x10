@@ -77,12 +77,12 @@ public class WordCount {
             input_set_3.add(Pair[Int, String](i + 7, str7));
         }
 
-        val input = new ArrayList[ArrayList[Pair[Int, String]]]();        
-        for (i in 0..16){
-            input.add(input_set_1);
-            input.add(input_set_2);
-            input.add(input_set_3);
-        }
+        val input = new Rail[ArrayList[Pair[Int, String]]](16,
+          (i:Int) => { switch (i%3) {
+            case 0: return input_set_1;
+            case 1: return input_set_2;
+            default: return input_set_3;
+          }});
 
         val mapper = new WordCountMapper();
         val reducer =  new WordCountReducer();

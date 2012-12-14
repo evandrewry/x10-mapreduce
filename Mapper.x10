@@ -7,7 +7,9 @@ public abstract class Mapper[IK, IV, OK, OV] {
         outputCollector:MapperOutputCollector[OK, OV])
     :void;
 
-    public def run(input:List[Pair[IK,IV]], partitions:Int, partition_op:(OK, Int)=>Int)
+    public def run(input:List[Pair[IK,IV]],
+        partitions:Int,
+        partition_op:(OK, Int)=>Int)
     {
         val oc = new MapperOutputCollector[OK, OV](partitions, partition_op);
         for (i in input)
