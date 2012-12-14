@@ -2,7 +2,7 @@ import x10.io.Console;
 import x10.util.HashMap;
 import x10.util.List;
 import x10.util.ArrayList;
-import x10.util.Box;
+import x10.util.Pair;
 import x10.util.Timer;
 
 public class WordCount {
@@ -11,7 +11,7 @@ public class WordCount {
     private static class WordCountMapper extends Mapper[Int, String, String, Int] {
         public def map(num:Int,
                        input:String,
-                       output:OutputCollector[String, Int]) {
+                       output:MapperOutputCollector[String, Int]) {
             var text:String = input;
             var word:String;
             while(text.trim().length() > 0) {
@@ -32,7 +32,7 @@ public class WordCount {
     private static class WordCountReducer extends Reducer[String, Int, String, Int] {
         public def reduce(key:String,
                           values:List[Int],
-                          output:OutputCollector[String, Int]) {
+                          output:ReducerOutputCollector[String, Int]) {
             var sum:Int = 0;
             for (i in 0..(values.size() - 1)) {
                 sum += values(i);
@@ -41,59 +41,44 @@ public class WordCount {
         }
     }
 
-    private static class WordCountMapperOutputCollector extends OutputCollector[String, Int] {
-        public def collect(key:String, value:Int) {
-            val current = get(key);
-            if (current != null) {
-                put(key, current.value + 1);
-            } else {
-                put(key, 1);
-            }
-        }
-
-        public def make() {
-            return new WordCountMapperOutputCollector();
-        }
-    }
-
     public static def main(args:Array[String]{self.rank == 1}) {
 
 
-        val input_set_1 = new HashMap[Int, String]();
+        val input_set_1 = new ArrayList[Pair[Int, String]]();
         for (var i:Int = 0; i < 100; i += 7) {
-            input_set_1.put(i + 1, str1);
-            input_set_1.put(i + 2, str2);
-            input_set_1.put(i + 3, str3);
-            input_set_1.put(i + 4, str4);
-            input_set_1.put(i + 5, str5);
-            input_set_1.put(i + 6, str6);
-            input_set_1.put(i + 7, str7);
+            input_set_1.add(Pair[Int, String](i + 1, str1));
+            input_set_1.add(Pair[Int, String](i + 2, str2));
+            input_set_1.add(Pair[Int, String](i + 3, str3));
+            input_set_1.add(Pair[Int, String](i + 4, str4));
+            input_set_1.add(Pair[Int, String](i + 5, str5));
+            input_set_1.add(Pair[Int, String](i + 6, str6));
+            input_set_1.add(Pair[Int, String](i + 7, str7));
         }
 
-        val input_set_2 = new HashMap[Int, String]();        
+        val input_set_2 = new ArrayList[Pair[Int, String]]();        
         for (var i:Int = 0; i < 100; i += 7) {
-            input_set_2.put(i + 1, str1);
-            input_set_2.put(i + 2, str2);
-            input_set_2.put(i + 3, str3);
-            input_set_2.put(i + 4, str4);
-            input_set_2.put(i + 5, str5);
-            input_set_2.put(i + 6, str6);
-            input_set_2.put(i + 7, str7);
+            input_set_2.add(Pair[Int, String](i + 1, str1));
+            input_set_2.add(Pair[Int, String](i + 2, str2));
+            input_set_2.add(Pair[Int, String](i + 3, str3));
+            input_set_2.add(Pair[Int, String](i + 4, str4));
+            input_set_2.add(Pair[Int, String](i + 5, str5));
+            input_set_2.add(Pair[Int, String](i + 6, str6));
+            input_set_2.add(Pair[Int, String](i + 7, str7));
         }
 
-        val input_set_3 = new HashMap[Int, String]();        
+        val input_set_3 = new ArrayList[Pair[Int, String]]();        
         for (var i:Int = 0; i < 100; i += 7) {
-            input_set_3.put(i + 1, str1);
-            input_set_3.put(i + 2, str2);
-            input_set_3.put(i + 3, str3);
-            input_set_3.put(i + 4, str4);
-            input_set_3.put(i + 5, str5);
-            input_set_3.put(i + 6, str6);
-            input_set_3.put(i + 7, str7);
+            input_set_3.add(Pair[Int, String](i + 1, str1));
+            input_set_3.add(Pair[Int, String](i + 2, str2));
+            input_set_3.add(Pair[Int, String](i + 3, str3));
+            input_set_3.add(Pair[Int, String](i + 4, str4));
+            input_set_3.add(Pair[Int, String](i + 5, str5));
+            input_set_3.add(Pair[Int, String](i + 6, str6));
+            input_set_3.add(Pair[Int, String](i + 7, str7));
         }
 
-        val input = new ArrayList[HashMap[Int, String]]();        
-        for (i in 0..5){
+        val input = new ArrayList[ArrayList[Pair[Int, String]]]();        
+        for (i in 0..16){
             input.add(input_set_1);
             input.add(input_set_2);
             input.add(input_set_3);
@@ -101,12 +86,8 @@ public class WordCount {
 
         val mapper = new WordCountMapper();
         val reducer =  new WordCountReducer();
-        val map_output_collector = new WordCountMapperOutputCollector();
-        val reduce_output_collector = new OutputCollector[String, Int]();
         val job = new MapReduceJob(mapper,
                                    reducer,
-                                   map_output_collector,
-                                   reduce_output_collector,
                                    (k:String, n:Int) => Math.abs(k.hashCode()) % n);
 
         val start = timer.nanoTime();

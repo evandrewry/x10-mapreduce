@@ -5,15 +5,15 @@ public abstract class Reducer[IK, IV, OK, OV] {
 
     public abstract def reduce(key:IK,
                                values:List[IV],
-                               outputCollector:OutputCollector[OK, OV])
+                               outputCollector:ReducerOutputCollector[OK, OV])
     :void;
 
-    public def run(input:HashMap[IK, List[IV]],
-                   outputCollector:OutputCollector[OK, OV])
-    :HashMap[OK, OV] {
+    public def run(input:HashMap[IK, List[IV]])
+    {
+        val oc = new ReducerOutputCollector[OK, OV]();
         for (k in input.keySet())
-                reduce(k, input.get(k).value, outputCollector);
-        return outputCollector.get();
+                reduce(k, input.get(k).value, oc);
+        return oc.get();
     }
 
 }
