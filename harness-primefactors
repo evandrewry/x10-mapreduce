@@ -5,6 +5,6 @@ do
     asyncs=$((2 ** $i))
     export X10_NTHREADS=$asyncs
     echo trial $(($i+1)), $asyncs asyncs
-    ./PrimeFactors 100000
+    ./PrimeFactors 1000000
 done
 

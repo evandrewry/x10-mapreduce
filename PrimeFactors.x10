@@ -41,6 +41,8 @@ public class PrimeFactors {
         public def reduce(key:Long,
             values:List[Long],
             output:ReducerOutputCollector[Long, Int]) {
+            primeFactors(999999999999L);
+            primeFactors(999999999999L);
             output.collect(key, values.size());
         }
     }
