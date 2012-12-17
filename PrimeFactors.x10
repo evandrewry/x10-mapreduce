@@ -5,6 +5,13 @@ import x10.util.ArrayList;
 import x10.util.Pair;
 import x10.util.Timer;
 
+
+/**
+* this is a simple test case for our mapreduce framework that
+* computes prime factors of the input set, categorizes each
+* input by its largest prime factor, and then returns a count
+* for each largest prime factor*/
+
 public class PrimeFactors {
     private static val timer = new Timer();
 
@@ -28,6 +35,8 @@ public class PrimeFactors {
         return factors;
     }
 
+
+    /* MAPPER SUBCLASS */
     private static class PrimeFactorsMapper extends Mapper[Long, Long, Long, Long] {
         public def map(num:Long,
             input:Long,
@@ -37,10 +46,14 @@ public class PrimeFactors {
         }
     }
 
+
+    /* REDUCER SUBCLASS */    
     private static class PrimeFactorsReducer extends Reducer[Long, Long, Long, Int] {
         public def reduce(key:Long,
             values:List[Long],
             output:ReducerOutputCollector[Long, Int]) {
+            /* this is bogus but adds computation to the reduce step
+            * and helps in testing speedups */
             primeFactors(9999999999999L);
             output.collect(key, values.size());
         }
@@ -54,22 +67,29 @@ public class PrimeFactors {
         }
         val set_size = Long.parse(argv(0));
 
+
+        /* set up input set */
         val input = new ArrayList[Pair[Long, Long]]();
         for (var i:Long = 1; i < set_size; i++) {
             input.add(Pair[Long, Long](i, Long.MAX_VALUE - i));
         }
 
+
+        /* set up job */
         val mapper = new PrimeFactorsMapper();
         val reducer =  new PrimeFactorsReducer();
         val job = new MapReduceJob[Long, Long, Long, Long, Long, Int](mapper,
             reducer,
             (k:Long, n:Int) => Math.abs(k.hashCode()) % n);
 
+
+        /* run job */
         val start = timer.milliTime();
         val output = job.run(input);
         val time = timer.milliTime() - start;
         Console.OUT.println("\t\t" + time);
 
+        /* print results */        
         //for (k in output.keySet())
         //Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
     }

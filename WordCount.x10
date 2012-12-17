@@ -5,9 +5,14 @@ import x10.util.ArrayList;
 import x10.util.Pair;
 import x10.util.Timer;
 
+/**
+* this is the canonical multi-document word count example of a
+* MapReduce program using our X10 flavor of MapReduce.
+*/
 public class WordCount {
     private static val timer = new Timer();
 
+    /* MAPPER SUBCLASS */
     private static class WordCountMapper extends Mapper[Int, String, String, Int] {
         public def map(num:Int,
                        input:String,
@@ -29,6 +34,7 @@ public class WordCount {
         }
     }
 
+    /* REDUCER SUBCLASS */
     private static class WordCountReducer extends Reducer[String, Int, String, Int] {
         public def reduce(key:String,
                           values:List[Int],
@@ -41,6 +47,7 @@ public class WordCount {
         }
     }
 
+
     public static def main(argv:Array[String]{self.rank == 1}) {
 
         if (argv.size != 1) {                                                        
@@ -48,6 +55,9 @@ public class WordCount {
             return;                                                                  
         }                                                                            
         val set_size = Long.parse(argv(0));
+
+
+        /* set up input set */        
         val input = new ArrayList[Pair[Int, String]]();
         for (var i:Int = 0; i < set_size; i += 7) {
             input.add(Pair[Int, String](i + 1, str1));
@@ -59,17 +69,22 @@ public class WordCount {
             input.add(Pair[Int, String](i + 7, str7));
         }
 
+        
+        /* set up job */        
         val mapper = new WordCountMapper();
         val reducer =  new WordCountReducer();
         val job = new MapReduceJob(mapper,
                                    reducer,
                                    (k:String, n:Int) => Math.abs(k.hashCode()) % n);
 
+
+        /* run job */        
         val start = timer.milliTime();
         val output = job.run(input);
         val time = timer.milliTime() - start;
         Console.OUT.println("\t\t" + time);
 
+        /* print results */
         //for (k in output.keySet())
         //Console.OUT.print("[" + k + " : " + output.get(k).value + "], ");
     }
