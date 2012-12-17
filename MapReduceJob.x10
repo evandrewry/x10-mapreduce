@@ -10,15 +10,6 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
     private val reducer:Reducer[CK, CV, OK, OV];
     private val partition_op:(CK, Int) => Int;
 
-    /*public def this(mapper:Mapper[IK, IV, CK, CV],
-                    reducer:Reducer[CK, CV, OK, OV]) {
-        this.mapper = mapper;
-        this.reducer = reducer;
-        this.m_output_collector = new OutputCollector[CK, CV]();
-        this.r_output_collector = new OutputCollector[OK, OV]();
-        this.partition_op = (k:CK, n:Int) => Math.abs(k.hashCode()) % n;
-    }*/
-
     public def this(mapper:Mapper[IK, IV, CK, CV],
                     reducer:Reducer[CK, CV, OK, OV],
                     partition_op:(CK, Int)=>Int) {
@@ -28,19 +19,27 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
     }
 
 
-    public def run(input:Rail[ArrayList[Pair[IK,IV]]])
+    public def run(input:List[Pair[IK,IV]])
     {
-        val reducers = input.size;
+        val nthreads = Runtime.NTHREADS;
         var start:Long = timer.milliTime();
-        val intermediates = new Rail[Rail[ArrayList[Pair[CK, CV]]]](reducers);
-        finish for (i in input) async {
-            intermediates(i) = mapper.run(input(i), reducers, partition_op);
+        val intermediates = new Rail[Rail[ArrayList[Pair[CK, CV]]]](nthreads);
+
+        val step = (input.size() < nthreads) ? 1 : (input.size() / nthreads);
+        finish for (var lower:Int = 0, i:Int = 0; lower < input.size(); lower += step, i++){
+                val ii = i;
+                val l = lower;
+                val u = (lower + step >= input.size()) ? input.size() : (lower + step);
+                async {
+                    intermediates(ii) = mapper.run(input.subList(l, u), nthreads, partition_op);
+                } 
         }
+
         Console.OUT.println("map\t\t" + (timer.milliTime() - start));
 
         /* shuffle */
         start = timer.milliTime();
-        val shuffled = new Rail[HashMap[CK, List[CV]]](reducers, (i:Int)=>new HashMap[CK, List[CV]]());
+        val shuffled = new Rail[HashMap[CK, List[CV]]](nthreads, (i:Int)=>new HashMap[CK, List[CV]]());
         /* iterate over intermediate results */
         for (mapresult in intermediates) {
             /* iterate over partitions for each intermediates result */
@@ -63,7 +62,7 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
         Console.OUT.println("shuffle\t\t" + (timer.milliTime() - start));
 
         start = timer.milliTime();
-        val reduced = new Rail[ArrayList[Pair[OK, OV]]](reducers);
+        val reduced = new Rail[ArrayList[Pair[OK, OV]]](nthreads);
         finish for (i in shuffled) async {
             reduced(i) = reducer.run(shuffled(i));
         }

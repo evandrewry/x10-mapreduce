@@ -53,12 +53,10 @@ public class PrimeFactors {
         }
         val set_size = Long.parse(argv(0));
 
-        val input_set = new ArrayList[Pair[Long, Long]]();
+        val input = new ArrayList[Pair[Long, Long]]();
         for (var i:Long = 1; i < set_size; i++) {
-            input_set.add(Pair[Long, Long](i, Long.MAX_VALUE - i));
+            input.add(Pair[Long, Long](i, Long.MAX_VALUE - i));
         }
-
-        val input = new Rail[ArrayList[Pair[Long, Long]]](16, (i:Int) => input_set);
 
         val mapper = new PrimeFactorsMapper();
         val reducer =  new PrimeFactorsReducer();
