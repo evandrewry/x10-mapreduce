@@ -92,11 +92,11 @@ private static class WordCountReducer extends Reducer[String, Int, String, Int] 
 
 ###Putting the pieces together
 This is how we would construct and run a MapReduceJob for the word count example,
-where input is a list of HashMaps that we want to feed into the Mapper class as
-input. In this example, each item on the list is a HashMap that is essentially
-a list of documents we want to count the words in. Each HashMap on the list is
+where input is a list of Pairs that we want to feed into the Mapper class as
+input. In this example, each item on the list is a documents we want to count
+the words in. The list is split up evenly and each resulting partition is then
 sent to a seperate Mapper job, which processes all the documents in its input
-HashMap (keys are document id's, values are the actual documents, as Strings).
+list (keys are document id's, values are the actual documents, as Strings).
 Each Mapper job will output (key, value) pairs with words as keys, and with counts
 as values. The shuffle operation partitions these intermediate results into
 groups based on key, and merges all values with matching keys into a single
