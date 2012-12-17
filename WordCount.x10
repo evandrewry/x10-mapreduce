@@ -48,45 +48,16 @@ public class WordCount {
             return;                                                                  
         }                                                                            
         val set_size = Long.parse(argv(0));
-        val input_set_1 = new ArrayList[Pair[Int, String]]();
+        val input = new ArrayList[Pair[Int, String]]();
         for (var i:Int = 0; i < set_size; i += 7) {
-            input_set_1.add(Pair[Int, String](i + 1, str1));
-            input_set_1.add(Pair[Int, String](i + 2, str2));
-            input_set_1.add(Pair[Int, String](i + 3, str3));
-            input_set_1.add(Pair[Int, String](i + 4, str4));
-            input_set_1.add(Pair[Int, String](i + 5, str5));
-            input_set_1.add(Pair[Int, String](i + 6, str6));
-            input_set_1.add(Pair[Int, String](i + 7, str7));
+            input.add(Pair[Int, String](i + 1, str1));
+            input.add(Pair[Int, String](i + 2, str2));
+            input.add(Pair[Int, String](i + 3, str3));
+            input.add(Pair[Int, String](i + 4, str4));
+            input.add(Pair[Int, String](i + 5, str5));
+            input.add(Pair[Int, String](i + 6, str6));
+            input.add(Pair[Int, String](i + 7, str7));
         }
-
-        val input_set_2 = new ArrayList[Pair[Int, String]]();        
-        for (var i:Int = 0; i < set_size; i += 7) {
-            input_set_2.add(Pair[Int, String](i + 1, str1));
-            input_set_2.add(Pair[Int, String](i + 2, str2));
-            input_set_2.add(Pair[Int, String](i + 3, str3));
-            input_set_2.add(Pair[Int, String](i + 4, str4));
-            input_set_2.add(Pair[Int, String](i + 5, str5));
-            input_set_2.add(Pair[Int, String](i + 6, str6));
-            input_set_2.add(Pair[Int, String](i + 7, str7));
-        }
-
-        val input_set_3 = new ArrayList[Pair[Int, String]]();        
-        for (var i:Int = 0; i < set_size; i += 7) {
-            input_set_3.add(Pair[Int, String](i + 1, str1));
-            input_set_3.add(Pair[Int, String](i + 2, str2));
-            input_set_3.add(Pair[Int, String](i + 3, str3));
-            input_set_3.add(Pair[Int, String](i + 4, str4));
-            input_set_3.add(Pair[Int, String](i + 5, str5));
-            input_set_3.add(Pair[Int, String](i + 6, str6));
-            input_set_3.add(Pair[Int, String](i + 7, str7));
-        }
-
-        val input = new Rail[ArrayList[Pair[Int, String]]](16,
-          (i:Int) => { switch (i%3) {
-            case 0: return input_set_1;
-            case 1: return input_set_2;
-            default: return input_set_3;
-          }});
 
         val mapper = new WordCountMapper();
         val reducer =  new WordCountReducer();
