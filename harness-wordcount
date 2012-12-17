@@ -5,6 +5,6 @@ do
     asyncs=$((2 ** $i))
     export X10_NTHREADS=$asyncs
     echo trial $(($i+1)), $asyncs asyncs
-    ./WordCount 500
+    ./WordCount 10000
 done
 
