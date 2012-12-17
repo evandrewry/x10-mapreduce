@@ -31,15 +31,15 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
     public def run(input:Rail[ArrayList[Pair[IK,IV]]])
     {
         val reducers = input.size;
-        var start:Long = timer.nanoTime();
+        var start:Long = timer.milliTime();
         val intermediates = new Rail[Rail[ArrayList[Pair[CK, CV]]]](reducers);
         finish for (i in input) async {
             intermediates(i) = mapper.run(input(i), reducers, partition_op);
         }
-        Console.OUT.println("map\t\t" + (timer.nanoTime() - start));
+        Console.OUT.println("map\t\t" + (timer.milliTime() - start));
 
         /* shuffle */
-        start = timer.nanoTime();
+        start = timer.milliTime();
         val shuffled = new Rail[HashMap[CK, List[CV]]](reducers, (i:Int)=>new HashMap[CK, List[CV]]());
         /* iterate over intermediate results */
         for (mapresult in intermediates) {
@@ -60,23 +60,23 @@ public class MapReduceJob[IK, IV, CK, CV, OK, OV] {
                 }
             }
         }
-        Console.OUT.println("shuffle\t\t" + (timer.nanoTime() - start));
+        Console.OUT.println("shuffle\t\t" + (timer.milliTime() - start));
 
-        start = timer.nanoTime();
+        start = timer.milliTime();
         val reduced = new Rail[ArrayList[Pair[OK, OV]]](reducers);
         finish for (i in shuffled) async {
             reduced(i) = reducer.run(shuffled(i));
         }
-        Console.OUT.println("reduce\t\t" + (timer.nanoTime() - start));
+        Console.OUT.println("reduce\t\t" + (timer.milliTime() - start));
 
         val output = new HashMap[OK, OV]();
-        start = timer.nanoTime();
+        start = timer.milliTime();
         for (i in reduced) {
             for (pair in reduced(i)) {
                 output.put(pair.first, pair.second);
             }
         }
-        Console.OUT.println("collect\t\t" + (timer.nanoTime() - start));
+        Console.OUT.println("collect\t\t" + (timer.milliTime() - start));
 
         return output;
 

@@ -2,7 +2,7 @@ X10C=${X10_HOME}/bin/x10c++
 
 FLAGS=-VERBOSE_CHECKS=TRUE -O -NO_CHECKS -noassert -cxx-prearg -O2
 
-SRCS=WordCount.x10
+SRCS=WordCount.x10 PrimeFactors.x10
 
 EXES=$(SRCS:.x10=)
 

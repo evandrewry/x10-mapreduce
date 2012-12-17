@@ -41,11 +41,15 @@ public class WordCount {
         }
     }
 
-    public static def main(args:Array[String]{self.rank == 1}) {
+    public static def main(argv:Array[String]{self.rank == 1}) {
 
-
+        if (argv.size != 1) {                                                        
+            Console.ERR.println("USAGE: WordCount <inputSize>");                     
+            return;                                                                  
+        }                                                                            
+        val set_size = Long.parse(argv(0));
         val input_set_1 = new ArrayList[Pair[Int, String]]();
-        for (var i:Int = 0; i < 100; i += 7) {
+        for (var i:Int = 0; i < set_size; i += 7) {
             input_set_1.add(Pair[Int, String](i + 1, str1));
             input_set_1.add(Pair[Int, String](i + 2, str2));
             input_set_1.add(Pair[Int, String](i + 3, str3));
@@ -56,7 +60,7 @@ public class WordCount {
         }
 
         val input_set_2 = new ArrayList[Pair[Int, String]]();        
-        for (var i:Int = 0; i < 100; i += 7) {
+        for (var i:Int = 0; i < set_size; i += 7) {
             input_set_2.add(Pair[Int, String](i + 1, str1));
             input_set_2.add(Pair[Int, String](i + 2, str2));
             input_set_2.add(Pair[Int, String](i + 3, str3));
@@ -67,7 +71,7 @@ public class WordCount {
         }
 
         val input_set_3 = new ArrayList[Pair[Int, String]]();        
-        for (var i:Int = 0; i < 100; i += 7) {
+        for (var i:Int = 0; i < set_size; i += 7) {
             input_set_3.add(Pair[Int, String](i + 1, str1));
             input_set_3.add(Pair[Int, String](i + 2, str2));
             input_set_3.add(Pair[Int, String](i + 3, str3));
@@ -90,9 +94,9 @@ public class WordCount {
                                    reducer,
                                    (k:String, n:Int) => Math.abs(k.hashCode()) % n);
 
-        val start = timer.nanoTime();
+        val start = timer.milliTime();
         val output = job.run(input);
-        val time = timer.nanoTime() - start;
+        val time = timer.milliTime() - start;
         Console.OUT.println("\t\t" + time);
 
         //for (k in output.keySet())

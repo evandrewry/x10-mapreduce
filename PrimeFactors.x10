@@ -8,30 +8,30 @@ import x10.util.Timer;
 public class PrimeFactors {
     private static val timer = new Timer();
 
-  public static def primeFactors(num:Long) 
-  {
-    var n:Long = num; 
-    var factors:ArrayList[Long] = new ArrayList[Long]();
-   
-    for (var i:Long = 2; i <= n / i; i++)
+    public static def primeFactors(num:Long) 
     {
-      while (n % i == Zero.get[Long]()) 
-      {
-        factors.add(i);
-        n /= i;
-      }
+        var n:Long = num; 
+        var factors:ArrayList[Long] = new ArrayList[Long]();
+
+        for (var i:Long = 2; i <= n / i; i++)
+            {
+            while (n % i == Zero.get[Long]()) 
+                {
+                factors.add(i);
+                n /= i;
+            }
+        }
+        if (n > 1)
+            {
+            factors.add(n);
+        }
+        return factors;
     }
-    if (n > 1)
-    {
-      factors.add(n);
-    }
-    return factors;
-  }
 
     private static class PrimeFactorsMapper extends Mapper[Long, Long, Long, Long] {
         public def map(num:Long,
-                       input:Long,
-                       output:MapperOutputCollector[Long, Long]) {
+            input:Long,
+            output:MapperOutputCollector[Long, Long]) {
             val f = primeFactors(num);
             if (!f.isEmpty()) output.collect(f.getLast(), num);
         }
@@ -39,18 +39,22 @@ public class PrimeFactors {
 
     private static class PrimeFactorsReducer extends Reducer[Long, Long, Long, Int] {
         public def reduce(key:Long,
-                          values:List[Long],
-                          output:ReducerOutputCollector[Long, Int]) {
+            values:List[Long],
+            output:ReducerOutputCollector[Long, Int]) {
             output.collect(key, values.size());
         }
     }
 
 
-     public static def main(args:Array[String]{self.rank == 1}) {
-
+    public static def main(argv:Array[String]{self.rank == 1}) {
+        if (argv.size != 1) {
+            Console.ERR.println("USAGE: PrimeFactors <inputSize>");
+            return;
+        }
+        val set_size = Long.parse(argv(0));
 
         val input_set = new ArrayList[Pair[Long, Long]]();
-        for (var i:Long = 1; i < 100; i++) {
+        for (var i:Long = 1; i < set_size; i++) {
             input_set.add(Pair[Long, Long](i, Long.MAX_VALUE - i));
         }
 
@@ -59,12 +63,12 @@ public class PrimeFactors {
         val mapper = new PrimeFactorsMapper();
         val reducer =  new PrimeFactorsReducer();
         val job = new MapReduceJob[Long, Long, Long, Long, Long, Int](mapper,
-                                   reducer,
-                                   (k:Long, n:Int) => Math.abs(k.hashCode()) % n);
+            reducer,
+            (k:Long, n:Int) => Math.abs(k.hashCode()) % n);
 
-        val start = timer.nanoTime();
+        val start = timer.milliTime();
         val output = job.run(input);
-        val time = timer.nanoTime() - start;
+        val time = timer.milliTime() - start;
         Console.OUT.println("\t\t" + time);
 
         //for (k in output.keySet())
